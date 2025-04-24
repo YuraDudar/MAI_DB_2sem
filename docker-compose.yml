@@ -1,0 +1,24 @@
+services:
+  postgres_db:
+    build: .
+    container_name: real_estate_postgres
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: real_estate_db
+
+    volumes:
+      - ./init_db:/docker-entrypoint-initdb.d
+      - ./data_processed:/data
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
